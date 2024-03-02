@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
+import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,9 +16,27 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+      <main>
+      <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+      >
+        <nav>
+            <Link href="/">Home</Link>
+            <Link href="/resume">Resume</Link>
+            {/* TODO: make a resume */}
+            {/* TODO: add styling (tailwind!) */}
+        </nav>
+        {children}
+      </ThemeProvider>
+      </main>
+      </body>
     </html>
   );
 }
