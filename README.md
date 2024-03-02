@@ -14,6 +14,14 @@ pnpm dev
 bun dev
 ```
 
+Or use
+
+```bash
+pnpm run deploy
+```
+
+to deploy to cloudflare pages.
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Cloudflare integration
