@@ -20,6 +20,8 @@ Or use
 pnpm run deploy
 ```
 
+<!-- TODO optimize images, store on a cdn probably -->
+
 to deploy to cloudflare pages.
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

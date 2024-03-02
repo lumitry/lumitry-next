@@ -2,8 +2,7 @@
 
 import { cn } from "@/lib/utils/cn";
 import React, { useEffect, useState } from "react";
-import Image from 'next/image';
-import Link from "next/link";
+import { TechnologyCard } from "./TechnologyCard";
 
 export const InfiniteMovingCards = ({
   items,
@@ -15,7 +14,7 @@ export const InfiniteMovingCards = ({
   items: {
     image: string; // path
     name: string;
-    href: string; // where to go on click
+    onClick: () => void;
     // TODO should that be made into an onClick() function? that way you could easily adapt it to display a hover thing, which is what i want to do with each card
   }[];
   direction?: "left" | "right";
@@ -28,6 +27,18 @@ export const InfiniteMovingCards = ({
 
   useEffect(() => {
     addAnimation();
+    document.querySelectorAll(".technology-card").forEach((i) => {
+      const name = i.textContent;
+      if (items.some((item) => item.name === name)) {
+        i.addEventListener("click", () => {
+          const item = items.find((item) => item.name === name);
+          if (item) {
+            item.onClick();
+          }
+        });
+      }
+    }
+      );
   }, []);
   const [start, setStart] = useState(false);
   function addAnimation() {
@@ -36,6 +47,7 @@ export const InfiniteMovingCards = ({
 
       scrollerContent.forEach((item) => {
         const duplicatedItem = item.cloneNode(true);
+  
         if (scrollerRef.current) {
           scrollerRef.current.appendChild(duplicatedItem);
         }
@@ -89,30 +101,10 @@ export const InfiniteMovingCards = ({
         )}
       >
         {items.map((item, idx) => (
-            <li
-            className="w-[150px] max-w-full relative rounded-2xl border border-b-0 flex-shrink-0 border-slate-700 px-8 py-6 md:w-[150px]"
-            style={{
-              background:
-                "linear-gradient(180deg, var(--slate-800), var(--slate-900)",
-            }}
-            key={item.name}
-          >
-              <Link href={item.href}>
-              <div
-                aria-hidden="true"
-                className="user-select-none -z-1 pointer-events-none absolute -left-0.5 -top-0.5 h-[calc(100%_+_4px)] w-[calc(100%_+_4px)]"
-              ></div>
-              <Image
-                src={item.image}
-                alt={item.name}
-                width={100}
-                height={100}
-              />
-              <h3 className="max-w-xs !pb-2 !m-0 font-bold text-center text-base text-slate-100">
-                {item.name}
-              </h3>
-              </Link>
-          </li>
+            <TechnologyCard
+              key={idx}
+              item={item}
+            />
         ))}
       </ul>
     </div>

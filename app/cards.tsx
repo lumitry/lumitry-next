@@ -23,26 +23,44 @@ const technologies = [
   {
     image: "/python.png",
     name: "Python",
-    href: "#python",
+    onClick: () => {
+      console.log("Python");
+    }
   },
   {
-    image: "/python.png",
-    name: "Python",
-    href: "#python",
+    image: "/java.png",
+    name: "Java",
+    onClick: () => {
+      console.log("Java");
+    }
   },
   {
-    image: "/python.png",
-    name: "Python",
-    href: "#python",
+    image: "/spring.png",
+    name: "Java Spring",
+    onClick: () => {
+      console.log("Java Spring");
+    }
   },
   {
-    image: "/python.png",
-    name: "Python",
-    href: "#python",
+    image: "/javascript.png",
+    name: "JavaScript",
+    onClick: () => {
+      console.log("JavaScript");
+    }
   },
   {
-    image: "/python.png",
-    name: "Python",
-    href: "#python",
+    image: "/typescript.png",
+    name: "TypeScript",
+    onClick: () => {
+      console.log("TypeScript");
+    }
   },
+  {
+    image: "/react.png",
+    name: "React",
+    onClick: () => {
+      console.log("React");
+    }
+  },
+  // TODO add more, right now it looks kinda silly cus you can see both ends at once
 ];
