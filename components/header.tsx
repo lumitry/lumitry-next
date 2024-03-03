@@ -6,16 +6,20 @@ import React from "react";
 export default function Header() {
     return (
         <header className="bg-slate-900">
-            <h1 className="pt-5 scroll-m-20 text-4xl font-extrabold text-center tracking-tight lg:text-5xl mb-3">
+            <h1 className="mb-3 scroll-m-20 pt-5 text-center text-4xl font-extrabold tracking-tight lg:text-5xl">
                 Briggs Tucker
             </h1>
             <nav>
-                <div className="flex items-center justify-around m-auto max-w-xl text-xl font-medium pb-3">
-                    <Link href="/"><p>Home</p></Link>
-                    <Link href="/resume"><p>Resume</p></Link>
+                <div className="m-auto flex max-w-xl items-center justify-around pb-3 text-xl font-medium">
+                    <Link href="/">
+                        <p>Home</p>
+                    </Link>
+                    <Link href="/resume">
+                        <p>Resume</p>
+                    </Link>
                     {/* TODO: make a resume */}
                 </div>
             </nav>
         </header>
-);
+    );
 }
