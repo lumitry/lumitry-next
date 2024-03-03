@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
+import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] });
@@ -27,13 +27,8 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
       >
-        <nav>
-            <Link href="/">Home</Link>
-            <Link href="/resume">Resume</Link>
-            {/* TODO: make a resume */}
-            {/* TODO: add styling (tailwind!) */}
-        </nav>
-        {children}
+      <Header />
+      {children}
       </ThemeProvider>
       </main>
       </body>

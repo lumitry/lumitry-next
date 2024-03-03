@@ -8,7 +8,6 @@ import {
 export default function Home() {
   return (
     <main>
-      <h1 className="text-3xl font-bold underline">Briggs Tucker</h1>
       <p>Hi!</p>
       <TechnologiesScroller></TechnologiesScroller>
       {/* <HoverCard>
@@ -17,7 +16,7 @@ export default function Home() {
                   The React Framework – created and maintained by @vercel.
                 </HoverCardContent>
               </HoverCard> */}
-      {/* TODO: replace these with technologies (java, spring, js, ts, python, html, css, svelte, scss, react, etc.) */}
+      {/* TODO: replace these with technologies (angular, primeng, html, css, svelte, scss, javafx, etc.; take from linkedin) */}
     </main>
   );
 }

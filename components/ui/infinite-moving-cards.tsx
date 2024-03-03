@@ -15,7 +15,6 @@ export const InfiniteMovingCards = ({
     image: string; // path
     name: string;
     onClick: () => void;
-    // TODO should that be made into an onClick() function? that way you could easily adapt it to display a hover thing, which is what i want to do with each card
   }[];
   direction?: "left" | "right";
   speed?: "fast" | "normal" | "slow";
@@ -29,11 +28,11 @@ export const InfiniteMovingCards = ({
     addAnimation();
     document.querySelectorAll(".technology-card").forEach((i) => {
       const name = i.textContent;
-      if (items.some((item) => item.name === name)) {
+      if (name !== null && items.some((item) => item.name === name)) {
         i.addEventListener("click", () => {
           const item = items.find((item) => item.name === name);
           if (item) {
-            item.onClick();
+            item.onClick(); // TODO: fix this adding multiple event listeners
           }
         });
       }

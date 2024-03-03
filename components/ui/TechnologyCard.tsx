@@ -16,7 +16,7 @@ export function TechnologyCard({ key, item }: { key: number; item: {
             "linear-gradient(180deg, var(--slate-800), var(--slate-900)",
         }}
         key={key}
-        onClick={item.onClick}
+        // onClick={item.onClick}
         >
             <div
             aria-hidden="true"
