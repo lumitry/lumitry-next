@@ -7,23 +7,25 @@ export function TechnologiesScroller() {
     return (
         <div>
             {/* <h2 className="max-w-l !pb-2 !m-0 font-bold text-center text-3xl text-slate-100">Technologies</h2> */}
-            <h2 className="scroll-m-20 pb-2 text-center text-3xl font-bold tracking-tight text-slate-100 first:mt-0">
+            <h2 className="mt-4 scroll-m-20 pb-2 text-center text-3xl font-bold tracking-tight text-slate-100">
                 Technologies
             </h2>
             <p className="text-center">
                 I&apos;m a learner at heart, and always seek to diversify my
                 knowledge. Try clicking on a card to see more information!
             </p>
-
             <br />
 
-            <p className="m-6 bg-slate-900 bg-opacity-50 text-center italic text-muted-foreground">
+            <div className="m-auto max-w-6xl bg-slate-900 bg-opacity-50 p-2 text-center italic text-muted-foreground">
+                {/* <span className=""> */}
                 For reference, a confidence value of 4 or 5 means I&apos;m
                 confident enough in that technology to work on it with minimal
                 help/supervision. A 3 means I&apos;d need some extra help, and a
                 1 or a 2 means I&apos;d have to take steps to learn the
                 technology before being confident in my abilities.
-            </p>
+                {/* </p> */}
+            </div>
+
             <div className="dark:bg-grid-white/[0.05] relative flex h-[20rem] flex-col  items-center justify-center overflow-hidden rounded-md antialiased">
                 <InfiniteMovingCards
                     items={technologies}
