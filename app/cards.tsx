@@ -64,7 +64,7 @@ const technologies = [
         name: "Java",
         confidence: 4,
         description:
-            "I've used Java for a while, and I'm confident in my ability to use it to create a variety of applications, from simple command-line programs to complex web applications. I've used it for a great number of class projects and assignments. While there are likely many things I have yet to learn about Java, I'm confident in my ability to learn them as needed.",
+            "I've used Java for a while, and I'm confident in my ability to use it to create a variety of applications, from simple CLI programs to web servers. I've used it for a many class projects. While there are likely many things I have yet to learn about Java, I'm confident in my ability to learn them as needed.",
     },
     {
         image: "/logos/spring.png",
@@ -99,7 +99,7 @@ const technologies = [
         name: "TypeScript",
         confidence: 4,
         description:
-            "I've used TypeScript quite a few times, and I always prefer using it over JavaScript, but due to its type safety, it can sometimes be a bit more difficult to use (a worthwhile tradeoff, though).",
+            "I've used TypeScript quite a few times, and I generally prefer using it over JavaScript, but due to its type safety, it can sometimes be a bit more difficult to use (a worthwhile tradeoff, though).",
     },
     {
         image: "/logos/react.png",
@@ -120,8 +120,8 @@ const technologies = [
         name: "PrimeNG",
         confidence: 3,
         description:
-            "I used PrimeNG on the Hockey Jersey E-Store project, and I'm pretty confident in my ability to use it to create a good-looking, responsive, and accessible UI. However, due to how difficult it is to customize individual components, I'm not as confident in my ability to use it to create a *unique* UI.",
-    },
+            "I used PrimeNG on the E-Store project, and I'm pretty confident in my ability to use it to create a good-looking, responsive, and accessible UI. However, due to how difficult it is to customize, I'm not as confident in my ability to use it to create a unique UI.",
+    }, // TODO link to the e-store project on this page
     {
         image: "/logos/svelte.svg",
         name: "Svelte",
@@ -162,7 +162,7 @@ const technologies = [
         name: "Git",
         confidence: 3,
         description:
-            "I respect git as an exceptionally powerful tool that I only know the basics of, but it's more than enough to work on a project collaboratively. I've used it for all of my college projects, and the fast majority of my personal projects and small scripts. Additionally, I've made very minor contributions to open-source projects in the past.",
+            "I respect git as an exceptionally powerful tool that I only know the basics of, but it's more than enough to work on a project collaboratively. I've used it for all of my college projects, and the vast majority of my personal projects and small scripts.",
     },
     {
         image: "/logos/github.svg",
@@ -197,7 +197,7 @@ const technologies = [
         name: "Sqlite3",
         confidence: 1,
         description:
-            "I started learning Sqlite3 for a project that's still in the very early stages, but I'm not very familiar with it; however, from what I can tell, it shares enough similarities with SQL that I'm comfortable including it here. The main thing I've learned is that it's a lot more limited than PostgreSQL since it doesn't support as many types, and it doesn't support stored procedures or triggers.",
+            "I started learning Sqlite3 for a project that's still in the very early stages, but I'm not very familiar with it. From what I can tell, it shares enough similarities with SQL that I'm comfortable including it here. It has fewer types, and no support for stored procedures or functions, but it's still quite capable.",
     },
     {
         image: "/logos/c.svg",
