@@ -1,4 +1,4 @@
-"use client";
+"use client"; // todo can i remove this? like let this render on the server?
 
 import { cn } from "@/lib/utils/cn";
 import React, { useEffect, useState } from "react";
@@ -40,24 +40,9 @@ export const InfiniteMovingCards = ({
             getSpeed();
             setStart(true);
         }
-        // document.querySelectorAll(".technology-card").forEach((i) => {
-        //     const name = i.textContent;
-        //     if (name !== null && items.some((item) => item.name === name)) {
-        //         i.addEventListener("click", () => {
-        //             const item = items.find((item) => item.name === name);
-        //             if (item) {
-        //                 // item.onClick(); // TODO: fix this adding multiple event listeners
-        //                 // TODO can maybe use this to open a popup.
-        //                 // i.e. by the equivalent of dv.render
-        //             }
-        //         });
-        //     }
-        // });
     }, [items]);
     const [start, setStart] = useState(false);
-    // function addAnimation() {
 
-    // }
     const getDirection = () => {
         if (containerRef.current) {
             if (direction === "left") {
@@ -83,7 +68,7 @@ export const InfiniteMovingCards = ({
             } else if (speed === "normal") {
                 containerRef.current.style.setProperty(
                     "--animation-duration",
-                    "40s",
+                    "50s",
                 );
             } else {
                 containerRef.current.style.setProperty(
@@ -98,14 +83,14 @@ export const InfiniteMovingCards = ({
             ref={containerRef}
             className={cn(
                 "relative  z-20 h-96 max-h-96 max-w-7xl",
-                // "[mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]", // TODO why does opening a HoverCard break this?
+                "[mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]",
                 className,
             )}
         >
             <ul
                 ref={scrollerRef}
                 className={cn(
-                    " flex w-max min-w-full shrink-0 flex-nowrap gap-4 py-4",
+                    "flex w-max min-w-full shrink-0 flex-nowrap gap-4 py-4",
                     start && "animate-scroll ",
                     pauseOnHover && "hover:[animation-play-state:paused]",
                 )}

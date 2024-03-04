@@ -18,7 +18,7 @@ export function TechnologyCard({
         name: string;
         confidence: number;
         description: string;
-        // TODO: show the confidence value somewhere on the card
+        // TODO: show the confidence value somewhere on the CARD (i.e. without clicking on it)
     };
 }) {
     const [isHoverCardOpen, setIsHoverCardOpen] = useState(false);
@@ -30,7 +30,7 @@ export function TechnologyCard({
     return (
         <div onClick={handleClick}>
             <li
-                className="technology-card relative w-[150px] max-w-full flex-shrink-0 rounded-2xl border border-b-0 border-slate-700 px-8 py-6 md:w-[150px]"
+                className="technology-card relative w-[150px] max-w-full flex-shrink-0 rounded-2xl border border-b-0 border-slate-700 px-8 py-6 hover:cursor-pointer md:w-[150px]"
                 style={{
                     background:
                         "linear-gradient(180deg, var(--slate-800), var(--slate-900)",
