@@ -7,7 +7,10 @@ export function TechnologiesScroller() {
     return (
         <div>
             {/* <h2 className="max-w-l !pb-2 !m-0 font-bold text-center text-3xl text-slate-100">Technologies</h2> */}
-            <h2 className="mt-4 scroll-m-20 pb-2 text-center text-3xl font-bold tracking-tight text-slate-100">
+            <h2
+                className="mt-4 scroll-m-20 pb-2 text-center text-3xl font-bold tracking-tight text-slate-100"
+                id="Technologies"
+            >
                 Technologies
             </h2>
             <p className="text-center">
@@ -26,7 +29,7 @@ export function TechnologiesScroller() {
                 {/* </p> */}
             </div>
 
-            <div className="dark:bg-grid-white/[0.05] relative flex max-h-96 flex-col  items-center justify-center overflow-visible rounded-md antialiased">
+            <div className="dark:bg-grid-white/[0.05] max-w-100 relative flex min-h-[50ch] flex-col items-center justify-center overflow-hidden rounded-md antialiased">
                 <InfiniteMovingCards
                     items={technologies}
                     direction="right"
@@ -39,7 +42,7 @@ export function TechnologiesScroller() {
 
 const technologies = [
     {
-        image: "/logos/python.png",
+        image: "/logos/python.svg",
         name: "Python",
         confidence: 5,
         description:
@@ -60,7 +63,7 @@ const technologies = [
             "I've used Pytest for many class projects and assignments, and I'm confident in my ability to use it to create detailed unit tests for Python code.",
     },
     {
-        image: "/logos/java.png",
+        image: "/logos/java.svg",
         name: "Java",
         confidence: 4,
         description:
@@ -88,21 +91,21 @@ const technologies = [
             "I used Mockito on the Hockey Jersey E-Store project, and I'm somewhat confident in my ability to use it to create basic mocks for unit tests.",
     },
     {
-        image: "/logos/javascript.png",
+        image: "/logos/javascript.svg",
         name: "JavaScript",
         confidence: 3,
         description:
             "While I prefer TypeScript in general, JS is still plenty capable and there's a lot about it that I still have left to explore (Node.js, for example). However, I believe that I'm proficient enough in it to create dynamic and engaging web pages.",
     },
     {
-        image: "/logos/typescript.png",
+        image: "/logos/typescript.svg",
         name: "TypeScript",
         confidence: 4,
         description:
             "I've used TypeScript quite a few times, and I generally prefer using it over JavaScript, but due to its type safety, it can sometimes be a bit more difficult to use (a worthwhile tradeoff, though).",
     },
     {
-        image: "/logos/react.png",
+        image: "/logos/react.svg",
         name: "React",
         confidence: 3,
         description:
@@ -206,4 +209,6 @@ const technologies = [
         description:
             "While I have classroom experience with C (Intro to Software Engineering focused on C and some C++), I'm only confident in the very basics of the language.",
     },
+    // TODO add macos, linux (debian-based primarily), windows (+ wsl), vscode, intellij/jetbrains
+    // TODO update any pngs to svgs
 ];

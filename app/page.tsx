@@ -7,7 +7,10 @@ export default function Home() {
             {/* <p>Hi!</p> */}
             <TechnologiesScroller />
             <Projects />
-            {/* TODO: projects component */}
+            {/* TODO: "Values" component
+            stuff like appreciation for open-source and stuff? */}
+            {/* TODO: also add splashes of color, probably purple, like to the technology box gradients and the project box gradients (they're the same)
+            its pretty bland right now */}
         </main>
     );
 }

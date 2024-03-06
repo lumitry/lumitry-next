@@ -1,4 +1,4 @@
-"use client"; // todo can i remove this? like let this render on the server?
+// "use client" // if errors happen, this might be the cause, i'm new to next
 
 import { cn } from "@/lib/utils/cn";
 import React, { useEffect, useState } from "react";
@@ -83,7 +83,7 @@ export const InfiniteMovingCards = ({
             ref={containerRef}
             className={cn(
                 "relative  z-20 h-96 max-h-96 max-w-7xl",
-                "[mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]",
+                // "[mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]",
                 className,
             )}
         >

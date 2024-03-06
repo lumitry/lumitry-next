@@ -14,9 +14,15 @@ export default function Header() {
                     <Link href="/">
                         <p>Home</p>
                     </Link>
-                    <Link href="/resume">
-                        <p>Resume</p>
+                    <Link href="#Technologies">
+                        <p>Technologies</p>
                     </Link>
+                    <Link href="#Projects">
+                        <p>Projects</p>
+                    </Link>
+                    {/* <Link href="/resume">
+                        <p>Resume</p>
+                    </Link> */}
                     {/* TODO: make a resume */}
                 </div>
             </nav>
