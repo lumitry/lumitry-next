@@ -19,15 +19,16 @@ export class Project {
 }
 
 export default function ProjectComponent({ project }: { project: Project }) {
+    // TODO should probably figure out a way to refactor this and WorkComponent together
     return (
         <div
-            className="m-4 ml-auto mr-auto flex max-w-[80vw]  flex-row rounded-2xl border border-slate-700 p-4 shadow-lg"
+            className="m-6 ml-auto mr-auto flex max-w-[80vw] flex-col rounded-2xl border border-slate-700 p-4 shadow-lg md:flex-row"
             style={{
                 background:
                     "linear-gradient(180deg, var(--slate-800), var(--slate-900)",
             }}
         >
-            <div className="relative mr-8 min-h-96 w-[45%]">
+            <div className="relative mb-4 min-h-96 w-full md:mb-0 md:mr-8 md:w-[45%]">
                 {/* TODO figure out sizing for the images, its such a mess rn.
                 like literally try resizing the window, its awful */}
                 <img
@@ -37,7 +38,7 @@ export default function ProjectComponent({ project }: { project: Project }) {
                     // fill
                 />
             </div>
-            <div className="w-[50%]">
+            <div className="w-full pr-0 pt-4 md:w-[65%] md:pr-10">
                 <h2 className="mb-2 text-xl font-bold">{project.name}</h2>
                 <p className="text-gray-200">
                     {project.description.split("\n").map((line, i) => (
