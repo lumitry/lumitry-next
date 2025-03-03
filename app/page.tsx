@@ -1,11 +1,13 @@
 import { TechnologiesScroller } from "./cards";
 import Projects from "./projects";
+import WorkExperience from "./work";
 
 export default function Home() {
     return (
         <main>
             {/* <p>Hi!</p> */}
             <TechnologiesScroller />
+            <WorkExperience />
             <Projects />
             {/* TODO: "Values" component
             stuff like appreciation for open-source and stuff? */}

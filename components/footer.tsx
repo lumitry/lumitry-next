@@ -6,7 +6,7 @@ const link_css_class = "text-blue-400 hover:text-blue-300";
 
 export default function Footer() {
     return (
-        <footer className="m-auto w-[50%] rounded-2xl bg-slate-900 text-center text-gray-200">
+        <footer className="m-auto w-[50%] rounded-2xl bg-slate-900 p-4 text-center text-gray-200">
             <p>&copy; 2024 Briggs Tucker</p>
             <p>
                 View this site&apos;s source code on{" "}

@@ -100,7 +100,7 @@ const technologies = [
     {
         image: "/logos/typescript.svg",
         name: "TypeScript",
-        confidence: 4,
+        confidence: 3,
         description:
             "I've used TypeScript quite a few times, and I generally prefer using it over JavaScript, but due to its type safety, it can sometimes be a bit more difficult to use (a worthwhile tradeoff, though).",
     },
@@ -165,7 +165,7 @@ const technologies = [
         name: "Git",
         confidence: 3,
         description:
-            "I respect git as an exceptionally powerful tool that I only know the basics of, but it's more than enough to work on a project collaboratively. I've used it for all of my college projects, and the vast majority of my personal projects and small scripts.",
+            "I respect git as an exceptionally powerful tool that I only know the basics of, but that's more than enough to work on a project collaboratively. I've used it on a SQA co-op, on all of my college projects, and on the vast majority of my personal projects and small scripts.",
     },
     {
         image: "/logos/github.svg",
@@ -182,11 +182,18 @@ const technologies = [
             "I have used GitLab for a few class projects, but I'm more familiar with GitHub.",
     },
     {
+        image: "/logos/gitea.svg",
+        name: "Gitea",
+        confidence: 2,
+        description:
+            "I currently self-host a Gitea instance for my personal projects, and I'm comfortable using it to host my repositories. I've set up a simple webhook, but no proper CI/CD pipelines.",
+    },
+    {
         image: "/logos/docker.svg",
         name: "Docker",
-        confidence: 1,
+        confidence: 2,
         description:
-            "I have used Docker in a cybersecurity course, and I've used it to self-host some services like NextCloud, tt-rss, and firefly-iii. I know how to make and connect basic containers, but for more complex setups, I'm still learning.",
+            "I have used Docker in a cybersecurity course, and I've used it to self-host some services like Portainer, NextCloud, Gitea, tt-rss, and firefly-iii. I know how to make and connect basic containers, but for more complex setups, I'm still learning.",
     },
     {
         image: "/logos/postgresql.svg",
@@ -209,6 +216,28 @@ const technologies = [
         description:
             "While I have classroom experience with C (Intro to Software Engineering focused on C and some C++), I'm only confident in the very basics of the language.",
     },
+    {
+        image: "/logos/samba.svg",
+        name: "Samba",
+        confidence: 1,
+        description:
+            "I have basic experience setting up a Samba share on my linux server, but I'm not very familiar with it.",
+    },
+    {
+        image: "/logos/selenium.svg",
+        name: "Selenium",
+        confidence: 3,
+        description:
+            "I used Selenium on a SQA co-op to write tests for a React-based web app, and I'm confident in my ability to use it to create comprehensive tests for web apps, including the testing of dynamic and reactive content.",
+    },
+    {
+        image: "/logos/youtrack.svg",
+        name: "YouTrack",
+        confidence: 3,
+        description:
+            "I used YouTrack on a SQA co-op to track bugs and features, and I'm confident in my ability to use it to manage a project. I wasn't tasked with administering it, so I'm not as familiar with that side of it.",
+    },
+
     // TODO add macos, linux (debian-based primarily), windows (+ wsl), vscode, intellij/jetbrains
     // TODO update any pngs to svgs
 ];

@@ -25,6 +25,9 @@ export default function Header() {
                     <Link href="#Technologies">
                         <p>Technologies</p>
                     </Link>
+                    <Link href="#WorkExperience">
+                        <p>Work Experience</p>
+                    </Link>
                     <Link href="#Projects">
                         <p>Projects</p>
                     </Link>

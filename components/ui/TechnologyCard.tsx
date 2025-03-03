@@ -1,5 +1,3 @@
-// "use client";
-
 import React, { useState } from "react";
 import {
     HoverCard,
@@ -27,6 +25,23 @@ export function TechnologyCard({
         setIsHoverCardOpen(!isHoverCardOpen);
     };
 
+    const getConfidenceColor = (confidence: number) => {
+        switch (confidence) {
+            case 1:
+                return "bg-red-500";
+            case 2:
+                return "bg-orange-500";
+            case 3:
+                return "bg-yellow-500";
+            case 4:
+                return "bg-lime-500";
+            case 5:
+                return "bg-green-500";
+            default:
+                return "bg-gray-500";
+        }
+    };
+
     return (
         <div onClick={handleClick}>
             <li
@@ -42,7 +57,11 @@ export function TechnologyCard({
                     aria-hidden="true"
                     className="user-select-none -z-1 pointer-events-none absolute -left-0.5 -top-0.5 h-[calc(100%_+_4px)] w-[calc(100%_+_4px)]"
                 ></div>
-                {/* <div className="flex flex-col justify-between"> */}
+                <div
+                    className={`absolute right-2 top-2 h-4 w-4 rounded-full ${getConfidenceColor(
+                        item.confidence,
+                    )}`}
+                ></div>
                 <Image
                     src={item.image}
                     alt={item.name}

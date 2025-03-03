@@ -13,7 +13,7 @@ export default function Projects() {
     return (
         <div>
             <h2
-                className="mt-4 scroll-m-20 pb-2 text-center text-3xl font-bold tracking-tight text-slate-100"
+                className="mt-12 scroll-m-20 pb-2 text-center text-3xl font-bold tracking-tight text-slate-100"
                 id="Projects"
             >
                 Projects
@@ -28,6 +28,24 @@ export default function Projects() {
 }
 
 const projects = [
+    new Project(
+        "Pillarboxd",
+        "/projects/Pillarboxd_Logo.png",
+        `(Course: Human-Centered Requirements and Design) (ONGOING)\n
+        - Worked in team of 5 to conceptualize, sketch, wireframe, and prototype a mobile app similar to Letterboxd for tracking movies, TV shows, and books\n
+        - Created various types of diagrams & documentation to help focus in on the needs and viewpoints of end users\n
+        - Expanded on the group's vision via creation of a functional prototype in Figma\n
+        - Received, processed, and acted upon feedback from peers & users in target population`,
+    ),
+    new Project(
+        "Multi-User Dungeon (MUD)",
+        "/projects/MUD_Game.png",
+        `(Course: Software Subsystems Engineering)\n
+        - Analyzed requirements document and created domain model\n
+        - Worked with team of 5 to create subsystem class diagrams and sequence diagrams\n
+        - Implemented Terminal User Interface using the Command pattern to control game events\n
+        - Implemented GUI with JavaFX following addition of new product requirements`,
+    ),
     new Project(
         "Hockey Jerseys E-Store",
         "/projects/e-store.png",
