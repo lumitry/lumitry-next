@@ -68,6 +68,7 @@ export function TechnologyCard({
                     width={100}
                     height={100}
                 />
+                {/* TODO: Make the image height actually constant */}
                 <h3 className="max-w-xs !pb-2 !pt-4 text-center text-base font-bold text-slate-100">
                     {item.name}
                 </h3>

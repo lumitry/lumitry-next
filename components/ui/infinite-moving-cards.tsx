@@ -1,7 +1,7 @@
 // "use client" // if errors happen, this might be the cause, i'm new to next
 
 import { cn } from "@/lib/utils/cn";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { TechnologyCard } from "./TechnologyCard";
 
 export const InfiniteMovingCards = ({
@@ -12,7 +12,7 @@ export const InfiniteMovingCards = ({
     className,
 }: {
     items: {
-        image: string; // src
+        image: string;
         name: string;
         confidence: number;
         description: string;
@@ -22,80 +22,67 @@ export const InfiniteMovingCards = ({
     pauseOnHover?: boolean;
     className?: string;
 }) => {
-    const containerRef = React.useRef<HTMLDivElement>(null);
-    const scrollerRef = React.useRef<HTMLUListElement>(null);
-    const itemsRef = React.useRef(items);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const scrollerRef = useRef<HTMLUListElement>(null);
+    const [clonedItems, setClonedItems] = useState(items);
+    const [started, setStarted] = useState(false);
+
+    // pre-map speed → duration
+    const speedMap = { fast: "20s", normal: "40s", slow: "80s" } as const;
 
     useEffect(() => {
-        if (containerRef.current && scrollerRef.current) {
-            itemsRef.current.push(...items);
+        if (!containerRef.current || !scrollerRef.current) return;
 
-            // remove items if the array gets too long (the easiest hack i could think of to prevent memory leaks)
-            // this is still a memory leak, but it's a slow one at least...
-            if (itemsRef.current.length > 1000) {
-                itemsRef.current = itemsRef.current.slice(0, 150);
-            }
+        const calculateClones = () => {
+            if (!containerRef.current || !scrollerRef.current) return;
 
-            getDirection();
-            getSpeed();
-            setStart(true);
-        }
-    }, [items]);
-    const [start, setStart] = useState(false);
+            // measure how wide the container is vs one pass of your items
+            const cw = containerRef.current.offsetWidth;
+            const sw = scrollerRef.current.scrollWidth;
 
-    const getDirection = () => {
-        if (containerRef.current) {
-            if (direction === "left") {
-                containerRef.current.style.setProperty(
-                    "--animation-direction",
-                    "forwards",
-                );
-            } else {
-                containerRef.current.style.setProperty(
-                    "--animation-direction",
-                    "reverse",
-                );
+            // how many times do we need to repeat to cover at least one full scroll?
+            const times = Math.ceil(cw / sw) + 1;
+
+            // build that cloned array
+            const buffer: typeof items = [];
+            for (let i = 0; i < times; i++) {
+                buffer.push(...items);
             }
-        }
-    };
-    const getSpeed = () => {
-        if (containerRef.current) {
-            if (speed === "fast") {
-                containerRef.current.style.setProperty(
-                    "--animation-duration",
-                    "20s",
-                );
-            } else if (speed === "normal") {
-                containerRef.current.style.setProperty(
-                    "--animation-duration",
-                    "50s",
-                );
-            } else {
-                containerRef.current.style.setProperty(
-                    "--animation-duration",
-                    "80s",
-                );
-            }
-        }
-    };
+            setClonedItems(buffer);
+
+            // set CSS custom props once
+            containerRef.current.style.setProperty(
+                "--animation-direction",
+                direction === "left" ? "forwards" : "reverse",
+            );
+            containerRef.current.style.setProperty(
+                "--animation-duration",
+                speedMap[speed],
+            );
+
+            // kick off the animation
+            setStarted(true);
+        };
+
+        calculateClones();
+        window.addEventListener("resize", calculateClones);
+        return () => window.removeEventListener("resize", calculateClones);
+    }, [items, direction, speed]);
+
     return (
         <div
             ref={containerRef}
-            className={cn(
-                "relative  z-20 h-96 max-h-96 max-w-7xl",
-                // "[mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]",
-                className,
-            )}
+            className={cn("relative z-20 h-96 max-h-96 max-w-7xl", className)}
         >
             <ul
                 ref={scrollerRef}
                 className={cn(
                     "flex w-max min-w-full shrink-0 flex-nowrap gap-4 py-4",
-                    start && "animate-scroll ",
+                    started && "animate-scroll",
                     pauseOnHover && "hover:[animation-play-state:paused]",
                 )}
             >
-                {items.map((item, idx) => (
+                {clonedItems.map((item, idx) => (
                     <TechnologyCard key={idx} item={item} />
                 ))}
             </ul>
