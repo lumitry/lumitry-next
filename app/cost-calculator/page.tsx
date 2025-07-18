@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Chart from "chart.js/auto";
+import type { Chart as ChartType } from "chart.js";
 
 export default function CostCalculatorPage() {
     const [allModels, setAllModels] = useState<any[]>([]);
@@ -18,7 +19,7 @@ export default function CostCalculatorPage() {
     >([]);
     const [isInitialized, setIsInitialized] = useState(false);
     const chartRef = useRef<HTMLCanvasElement>(null);
-    const chartInstance = useRef<any>(null);
+    const chartInstance = useRef<ChartType | null>(null);
 
     // Load persisted data on component mount
     useEffect(() => {
