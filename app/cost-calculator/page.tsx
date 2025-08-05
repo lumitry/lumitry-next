@@ -23,6 +23,7 @@ export default function CostCalculatorPage() {
     >([]);
     const [isInitialized, setIsInitialized] = useState(false);
     const [privacyFirst, setPrivacyFirst] = useState(true);
+    const [weightedAverage, setWeightedAverage] = useState(false);
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstance = useRef<ChartType | null>(null);
 
@@ -49,6 +50,9 @@ export default function CostCalculatorPage() {
         );
         const savedPrivacyFirst = localStorage.getItem(
             "llm-cost-calculator-privacy-first",
+        );
+        const savedWeightedAverage = localStorage.getItem(
+            "llm-cost-calculator-weighted-average",
         );
 
         // console.log(
@@ -84,6 +88,9 @@ export default function CostCalculatorPage() {
         }
         if (savedPrivacyFirst !== null) {
             setPrivacyFirst(savedPrivacyFirst === "true");
+        }
+        if (savedWeightedAverage !== null) {
+            setWeightedAverage(savedWeightedAverage === "true");
         }
 
         // Mark that we've loaded from storage
@@ -137,11 +144,21 @@ export default function CostCalculatorPage() {
 
     // Persist privacy setting when it changes
     useEffect(() => {
+        if (!isInitialized) return;
         localStorage.setItem(
             "llm-cost-calculator-privacy-first",
             privacyFirst.toString(),
         );
-    }, [privacyFirst]);
+    }, [privacyFirst, isInitialized]);
+
+    // Persist weighted average setting when it changes
+    useEffect(() => {
+        if (!isInitialized) return;
+        localStorage.setItem(
+            "llm-cost-calculator-weighted-average",
+            weightedAverage.toString(),
+        );
+    }, [weightedAverage, isInitialized]);
 
     interface Model {
         id: string;
@@ -189,7 +206,11 @@ export default function CostCalculatorPage() {
     );
 
     const getBestPricing = useCallback(
-        function (endpoints: any[], usePrivacyFirst: boolean) {
+        function (
+            endpoints: any[],
+            usePrivacyFirst: boolean,
+            useWeightedAverage: boolean = false,
+        ) {
             if (!endpoints || endpoints.length === 0) {
                 return null;
             }
@@ -215,27 +236,60 @@ export default function CostCalculatorPage() {
                 return null;
             }
 
-            // Sort by total cost (input + output) to find the cheapest
-            validEndpoints.sort((a, b) => {
-                const aCost =
-                    parseFloat(a.pricing.prompt) +
-                    parseFloat(a.pricing.completion);
-                const bCost =
-                    parseFloat(b.pricing.prompt) +
-                    parseFloat(b.pricing.completion);
-                return aCost - bCost;
-            });
+            if (useWeightedAverage) {
+                // Calculate weighted average pricing using inverse-price weighting
+                // Each endpoint gets weight proportional to 1/totalPrice (cheaper = higher weight)
+                const weights = validEndpoints.map((endpoint) => {
+                    const totalPrice =
+                        parseFloat(endpoint.pricing.prompt) +
+                        parseFloat(endpoint.pricing.completion);
+                    return 1 / totalPrice; // Inverse of total price
+                });
 
-            const cheapest = validEndpoints[0];
-            return {
-                inputPrice: parseFloat(cheapest.pricing.prompt),
-                outputPrice: parseFloat(cheapest.pricing.completion),
-            };
+                const totalWeight = weights.reduce(
+                    (sum, weight) => sum + weight,
+                    0,
+                );
+
+                let totalWeightedInputPrice = 0;
+                let totalWeightedOutputPrice = 0;
+
+                validEndpoints.forEach((endpoint, index) => {
+                    const normalizedWeight = weights[index] / totalWeight;
+                    const inputPrice = parseFloat(endpoint.pricing.prompt);
+                    const outputPrice = parseFloat(endpoint.pricing.completion);
+
+                    totalWeightedInputPrice += inputPrice * normalizedWeight;
+                    totalWeightedOutputPrice += outputPrice * normalizedWeight;
+                });
+
+                return {
+                    inputPrice: totalWeightedInputPrice,
+                    outputPrice: totalWeightedOutputPrice,
+                };
+            } else {
+                // Otherwise, return cheapest endpoint
+                validEndpoints.sort((a, b) => {
+                    const aCost =
+                        parseFloat(a.pricing.prompt) +
+                        parseFloat(a.pricing.completion);
+                    const bCost =
+                        parseFloat(b.pricing.prompt) +
+                        parseFloat(b.pricing.completion);
+                    return aCost - bCost;
+                });
+
+                const cheapest = validEndpoints[0];
+                return {
+                    inputPrice: parseFloat(cheapest.pricing.prompt),
+                    outputPrice: parseFloat(cheapest.pricing.completion),
+                };
+            }
         },
         [allProviders],
     );
 
-    // Refresh model pricing when privacy setting changes
+    // Refresh model pricing when privacy setting or weighted average changes
     useEffect(() => {
         if (model) {
             const { id } = JSON.parse(model);
@@ -245,6 +299,7 @@ export default function CostCalculatorPage() {
                 const pricing = getBestPricing(
                     endpoints.endpoints,
                     privacyFirst,
+                    weightedAverage,
                 );
                 if (pricing) {
                     setInputCost((pricing.inputPrice * 1e6).toFixed(6));
@@ -252,9 +307,9 @@ export default function CostCalculatorPage() {
                 }
             }
         }
-    }, [privacyFirst, model, modelEndpoints, getBestPricing]);
+    }, [privacyFirst, weightedAverage, model, modelEndpoints, getBestPricing]);
 
-    // Update all comparison models when privacy setting changes (but only if we have their endpoints)
+    // Update all comparison models when privacy setting or weighted average changes (but only if we have their endpoints)
     useEffect(() => {
         if (!isInitialized) return;
 
@@ -266,6 +321,7 @@ export default function CostCalculatorPage() {
                     const pricing = getBestPricing(
                         endpoints.endpoints,
                         privacyFirst,
+                        weightedAverage,
                     );
                     if (pricing) {
                         return {
@@ -289,7 +345,13 @@ export default function CostCalculatorPage() {
 
             return hasChanged ? updatedComparison : currentComparison;
         });
-    }, [privacyFirst, getBestPricing, isInitialized, modelEndpoints]);
+    }, [
+        privacyFirst,
+        weightedAverage,
+        getBestPricing,
+        isInitialized,
+        modelEndpoints,
+    ]);
 
     const fetchModels = useCallback(async function () {
         try {
@@ -355,6 +417,7 @@ export default function CostCalculatorPage() {
                     const pricing = getBestPricing(
                         endpoints.endpoints,
                         privacyFirst,
+                        weightedAverage,
                     );
                     if (pricing) {
                         setInputCost((pricing.inputPrice * 1e6).toFixed(6));
@@ -371,6 +434,7 @@ export default function CostCalculatorPage() {
         fetchModelEndpoints,
         getBestPricing,
         privacyFirst,
+        weightedAverage,
     ]);
 
     function calculateCost(
@@ -410,6 +474,7 @@ export default function CostCalculatorPage() {
                 const pricing = getBestPricing(
                     endpoints.endpoints,
                     privacyFirst,
+                    weightedAverage,
                 );
                 if (pricing) {
                     inputPrice = pricing.inputPrice;
@@ -439,7 +504,11 @@ export default function CostCalculatorPage() {
         const endpoints = await fetchModelEndpoints(modelId);
 
         if (endpoints && endpoints.endpoints) {
-            const pricing = getBestPricing(endpoints.endpoints, privacyFirst);
+            const pricing = getBestPricing(
+                endpoints.endpoints,
+                privacyFirst,
+                weightedAverage,
+            );
             if (pricing) {
                 setComparison((currentComparison) =>
                     currentComparison.map((item) =>
@@ -465,6 +534,7 @@ export default function CostCalculatorPage() {
                     const pricing = getBestPricing(
                         endpoints.endpoints,
                         privacyFirst,
+                        weightedAverage,
                     );
                     if (pricing) {
                         return {
@@ -618,6 +688,7 @@ export default function CostCalculatorPage() {
                                     const pricing = getBestPricing(
                                         endpoints.endpoints,
                                         privacyFirst,
+                                        weightedAverage,
                                     );
                                     if (pricing) {
                                         setInputCost(
@@ -708,6 +779,22 @@ export default function CostCalculatorPage() {
                         <span className="text-sm">
                             Privacy-first pricing (exclude providers that train
                             on data or log prompts)
+                        </span>
+                    </label>
+                </div>
+                <div className="mb-4">
+                    <label className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            checked={weightedAverage}
+                            onChange={(e) =>
+                                setWeightedAverage(e.target.checked)
+                            }
+                            className="h-4 w-4"
+                        />
+                        <span className="text-sm">
+                            Weighted average pricing (average all providers,
+                            giving higher weight to cheaper ones)
                         </span>
                     </label>
                 </div>
@@ -856,5 +943,7 @@ export default function CostCalculatorPage() {
 // TODO: Add support for dynamic pricing models (e.g., Gemini 2.5 Pro, Grok 4) (probably has to be hard-coded though, since it's not available via the API)
 // TODO: Add an 'independent' mode where token counts are linked to model instead of being global.
 // TODO: Add rough model performance metrics to comparison chart as a second axis, probably based on Artificial Analysis' API (see https://artificialanalysis.ai/documentation). Note that this requires attribution and response caching to avoid exceeding the API rate limits, as per their documentation.
+// TODO: Add an optional output token multiplier which is applied to the output token count of reasoning models. IDK what the UI would be like on this.
+// TODO: add (optional) "error bars" for pricing based on the various endpoints' pricing (this would need to account for both input and output costs; make sure to do that by provider, not by price—in other words, if a provider has the cheapest total cost, that should be used as the 'low' error bar, and the provider with the highest total cost should be used as the 'high' error bar, NOT based on the cheapest input and output costs separately, since many models will have a different 'most expensive' provider for input vs output costs)
 
 // Note: If you want straight-up input and output prices, not estimated costs based on token counts, see https://model-prices.vercel.app built by theo (github: @t3dotgg)
