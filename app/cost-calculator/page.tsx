@@ -225,7 +225,7 @@ export default function CostCalculatorPage() {
     useEffect(() => {
         if (!chartRef.current) return;
         const ctx = chartRef.current.getContext("2d")!;
-        const labels = comparison.map((m) => m.id);
+        const labels = comparison.map((m) => m.id.split("/")[1] || m.id);
 
         const newInputCosts = comparison.map((m) => {
             const inputCost =
@@ -323,7 +323,9 @@ export default function CostCalculatorPage() {
                     >
                         here
                     </a>{" "}
-                    for more information about OpenRouter.
+                    for more information about OpenRouter. Currently fetches the
+                    lowest pricing for each model, which may include providers
+                    that train on data.
                 </p>
                 <label className="mb-4 block">
                     Provider Filter:
@@ -520,5 +522,6 @@ export default function CostCalculatorPage() {
 // TODO: Add support for dynamic pricing models (e.g., Gemini 2.5 Pro, Grok 4) (probably has to be hard-coded though, since it's not available via the API)
 // TODO: Add an 'independent' mode where token counts are linked to model instead of being global.
 // TODO: Add rough model performance metrics to comparison chart as a second axis, probably based on Artificial Analysis' API (see https://artificialanalysis.ai/documentation). Note that this requires attribution and response caching to avoid exceeding the API rate limits, as per their documentation.
+// TODO: Skip providers who train on data (see https://github.com/lumitry/vela-chat/issues/66; may either require doing the second method or storing the model list on the server since I obviously can't just give people my API key)
 
 // Note: If you want straight-up input and output prices, not estimated costs based on token counts, see https://model-prices.vercel.app built by theo (github: @t3dotgg)
