@@ -7,6 +7,10 @@ import type { Chart as ChartType } from "chart.js";
 export default function CostCalculatorPage() {
     const [allModels, setAllModels] = useState<any[]>([]);
     const [providers, setProviders] = useState<string[]>([]);
+    const [allProviders, setAllProviders] = useState<any[]>([]);
+    const [modelEndpoints, setModelEndpoints] = useState<Record<string, any>>(
+        {},
+    );
     const [filter, setFilter] = useState("");
     const [model, setModel] = useState("");
     const [inputCost, setInputCost] = useState("");
@@ -18,6 +22,7 @@ export default function CostCalculatorPage() {
         { id: string; inputPrice: number; outputPrice: number }[]
     >([]);
     const [isInitialized, setIsInitialized] = useState(false);
+    const [privacyFirst, setPrivacyFirst] = useState(true);
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstance = useRef<ChartType | null>(null);
 
@@ -41,6 +46,9 @@ export default function CostCalculatorPage() {
         );
         const savedOutputCost = localStorage.getItem(
             "llm-cost-calculator-output-cost",
+        );
+        const savedPrivacyFirst = localStorage.getItem(
+            "llm-cost-calculator-privacy-first",
         );
 
         // console.log(
@@ -73,6 +81,9 @@ export default function CostCalculatorPage() {
         }
         if (savedOutputCost) {
             setOutputCost(savedOutputCost);
+        }
+        if (savedPrivacyFirst !== null) {
+            setPrivacyFirst(savedPrivacyFirst === "true");
         }
 
         // Mark that we've loaded from storage
@@ -124,6 +135,14 @@ export default function CostCalculatorPage() {
         localStorage.setItem("llm-cost-calculator-output-cost", outputCost);
     }, [outputCost]);
 
+    // Persist privacy setting when it changes
+    useEffect(() => {
+        localStorage.setItem(
+            "llm-cost-calculator-privacy-first",
+            privacyFirst.toString(),
+        );
+    }, [privacyFirst]);
+
     interface Model {
         id: string;
         inputPrice: number;
@@ -132,6 +151,145 @@ export default function CostCalculatorPage() {
     interface ModelsResponse {
         data: Model[];
     }
+
+    const fetchProviders = useCallback(async function () {
+        try {
+            const res = await fetch("https://openrouter.ai/api/v1/providers");
+            console.log("Fetched providers!");
+            const result = (await res.json()) as { data: any[] };
+            setAllProviders(result.data);
+        } catch (err) {
+            console.error("Failed to fetch providers:", err);
+        }
+    }, []);
+
+    const fetchModelEndpoints = useCallback(
+        async function (modelId: string) {
+            if (modelEndpoints[modelId]) {
+                return modelEndpoints[modelId];
+            }
+
+            try {
+                const res = await fetch(
+                    `https://openrouter.ai/api/v1/models/${modelId}/endpoints`,
+                );
+                console.log(`Fetched endpoints for ${modelId}!`);
+                const result = (await res.json()) as { data: any };
+                setModelEndpoints((prev) => ({
+                    ...prev,
+                    [modelId]: result.data,
+                }));
+                return result.data;
+            } catch (err) {
+                console.error(`Failed to fetch endpoints for ${modelId}:`, err);
+                return null;
+            }
+        },
+        [modelEndpoints],
+    );
+
+    const getBestPricing = useCallback(
+        function (endpoints: any[], usePrivacyFirst: boolean) {
+            if (!endpoints || endpoints.length === 0) {
+                return null;
+            }
+
+            let validEndpoints = endpoints.filter(
+                (endpoint) => endpoint.status === 0,
+            );
+
+            if (usePrivacyFirst && allProviders.length > 0) {
+                validEndpoints = validEndpoints.filter((endpoint) => {
+                    const provider = allProviders.find(
+                        (p) => p.slug === endpoint.provider_name?.toLowerCase(),
+                    );
+                    return (
+                        provider &&
+                        !provider.may_train_on_data &&
+                        !provider.may_log_prompts
+                    );
+                });
+            }
+
+            if (validEndpoints.length === 0) {
+                return null;
+            }
+
+            // Sort by total cost (input + output) to find the cheapest
+            validEndpoints.sort((a, b) => {
+                const aCost =
+                    parseFloat(a.pricing.prompt) +
+                    parseFloat(a.pricing.completion);
+                const bCost =
+                    parseFloat(b.pricing.prompt) +
+                    parseFloat(b.pricing.completion);
+                return aCost - bCost;
+            });
+
+            const cheapest = validEndpoints[0];
+            return {
+                inputPrice: parseFloat(cheapest.pricing.prompt),
+                outputPrice: parseFloat(cheapest.pricing.completion),
+            };
+        },
+        [allProviders],
+    );
+
+    // Refresh model pricing when privacy setting changes
+    useEffect(() => {
+        if (model) {
+            const { id } = JSON.parse(model);
+            const endpoints = modelEndpoints[id];
+
+            if (endpoints && endpoints.endpoints) {
+                const pricing = getBestPricing(
+                    endpoints.endpoints,
+                    privacyFirst,
+                );
+                if (pricing) {
+                    setInputCost((pricing.inputPrice * 1e6).toFixed(6));
+                    setOutputCost((pricing.outputPrice * 1e6).toFixed(6));
+                }
+            }
+        }
+    }, [privacyFirst, model, modelEndpoints, getBestPricing]);
+
+    // Update all comparison models when privacy setting changes (but only if we have their endpoints)
+    useEffect(() => {
+        if (!isInitialized) return;
+
+        setComparison((currentComparison) => {
+            const updatedComparison = currentComparison.map((item) => {
+                const endpoints = modelEndpoints[item.id];
+
+                if (endpoints && endpoints.endpoints) {
+                    const pricing = getBestPricing(
+                        endpoints.endpoints,
+                        privacyFirst,
+                    );
+                    if (pricing) {
+                        return {
+                            id: item.id,
+                            inputPrice: pricing.inputPrice,
+                            outputPrice: pricing.outputPrice,
+                        };
+                    }
+                }
+
+                // Keep original pricing if no endpoints data available
+                return item;
+            });
+
+            // Only update if something actually changed
+            const hasChanged = updatedComparison.some(
+                (item, index) =>
+                    item.inputPrice !== currentComparison[index]?.inputPrice ||
+                    item.outputPrice !== currentComparison[index]?.outputPrice,
+            );
+
+            return hasChanged ? updatedComparison : currentComparison;
+        });
+    }, [privacyFirst, getBestPricing, isInitialized, modelEndpoints]);
 
     const fetchModels = useCallback(async function () {
         try {
@@ -183,7 +341,37 @@ export default function CostCalculatorPage() {
 
     useEffect(() => {
         fetchModels();
-    }, [fetchModels]);
+        fetchProviders();
+    }, [fetchModels, fetchProviders]);
+
+    // Fetch endpoints for saved model once providers are loaded
+    useEffect(() => {
+        if (!isInitialized || !model || allProviders.length === 0) return;
+
+        const { id } = JSON.parse(model);
+        if (!modelEndpoints[id]) {
+            fetchModelEndpoints(id).then((endpoints) => {
+                if (endpoints && endpoints.endpoints) {
+                    const pricing = getBestPricing(
+                        endpoints.endpoints,
+                        privacyFirst,
+                    );
+                    if (pricing) {
+                        setInputCost((pricing.inputPrice * 1e6).toFixed(6));
+                        setOutputCost((pricing.outputPrice * 1e6).toFixed(6));
+                    }
+                }
+            });
+        }
+    }, [
+        isInitialized,
+        model,
+        allProviders,
+        modelEndpoints,
+        fetchModelEndpoints,
+        getBestPricing,
+        privacyFirst,
+    ]);
 
     function calculateCost(
         costIn: number,
@@ -209,16 +397,89 @@ export default function CostCalculatorPage() {
         );
     }
 
-    function addToComparison() {
+    async function addToComparison() {
         if (!model) return;
-        const { id, inputPrice, outputPrice } = JSON.parse(model);
+        const { id } = JSON.parse(model);
+
         if (!comparison.some((m) => m.id === id)) {
+            // Get the current pricing (which should already be fetched and cached)
+            const endpoints = modelEndpoints[id];
+            let inputPrice, outputPrice;
+
+            if (endpoints && endpoints.endpoints) {
+                const pricing = getBestPricing(
+                    endpoints.endpoints,
+                    privacyFirst,
+                );
+                if (pricing) {
+                    inputPrice = pricing.inputPrice;
+                    outputPrice = pricing.outputPrice;
+                } else {
+                    // Fallback to original pricing
+                    const modelData = JSON.parse(model);
+                    inputPrice = modelData.inputPrice;
+                    outputPrice = modelData.outputPrice;
+                }
+            } else {
+                // Fallback to original pricing
+                const modelData = JSON.parse(model);
+                inputPrice = modelData.inputPrice;
+                outputPrice = modelData.outputPrice;
+            }
+
             setComparison([...comparison, { id, inputPrice, outputPrice }]);
         }
     }
 
     function removeFromComparison(id: string) {
         setComparison(comparison.filter((m) => m.id !== id));
+    }
+
+    async function updateModelPricing(modelId: string) {
+        const endpoints = await fetchModelEndpoints(modelId);
+
+        if (endpoints && endpoints.endpoints) {
+            const pricing = getBestPricing(endpoints.endpoints, privacyFirst);
+            if (pricing) {
+                setComparison((currentComparison) =>
+                    currentComparison.map((item) =>
+                        item.id === modelId
+                            ? {
+                                  ...item,
+                                  inputPrice: pricing.inputPrice,
+                                  outputPrice: pricing.outputPrice,
+                              }
+                            : item,
+                    ),
+                );
+            }
+        }
+    }
+
+    async function updateAllModelPricing() {
+        const updatedComparison = await Promise.all(
+            comparison.map(async (item) => {
+                const endpoints = await fetchModelEndpoints(item.id);
+
+                if (endpoints && endpoints.endpoints) {
+                    const pricing = getBestPricing(
+                        endpoints.endpoints,
+                        privacyFirst,
+                    );
+                    if (pricing) {
+                        return {
+                            id: item.id,
+                            inputPrice: pricing.inputPrice,
+                            outputPrice: pricing.outputPrice,
+                        };
+                    }
+                }
+
+                return item;
+            }),
+        );
+
+        setComparison(updatedComparison);
     }
 
     // update Chart.js whenever comparison or token counts change
@@ -323,9 +584,7 @@ export default function CostCalculatorPage() {
                     >
                         here
                     </a>{" "}
-                    for more information about OpenRouter. Currently fetches the
-                    lowest pricing for each model, which may include providers
-                    that train on data.
+                    for more information about OpenRouter.
                 </p>
                 <label className="mb-4 block">
                     Provider Filter:
@@ -347,14 +606,50 @@ export default function CostCalculatorPage() {
                     <select
                         className="mt-1 w-full border p-2"
                         value={model}
-                        onChange={(e) => {
+                        onChange={async (e) => {
                             setModel(e.target.value);
                             if (e.target.value) {
-                                const { inputPrice, outputPrice } = JSON.parse(
-                                    e.target.value,
-                                );
-                                setInputCost((inputPrice * 1e6).toFixed(6));
-                                setOutputCost((outputPrice * 1e6).toFixed(6));
+                                const { id } = JSON.parse(e.target.value);
+
+                                // Fetch endpoints for this specific model
+                                const endpoints = await fetchModelEndpoints(id);
+
+                                if (endpoints && endpoints.endpoints) {
+                                    const pricing = getBestPricing(
+                                        endpoints.endpoints,
+                                        privacyFirst,
+                                    );
+                                    if (pricing) {
+                                        setInputCost(
+                                            (pricing.inputPrice * 1e6).toFixed(
+                                                6,
+                                            ),
+                                        );
+                                        setOutputCost(
+                                            (pricing.outputPrice * 1e6).toFixed(
+                                                6,
+                                            ),
+                                        );
+                                    } else {
+                                        // Fallback to original pricing if no valid endpoints found
+                                        const { inputPrice, outputPrice } =
+                                            JSON.parse(e.target.value);
+                                        setInputCost(
+                                            (inputPrice * 1e6).toFixed(6),
+                                        );
+                                        setOutputCost(
+                                            (outputPrice * 1e6).toFixed(6),
+                                        );
+                                    }
+                                } else {
+                                    // Fallback to original pricing if endpoint fetch fails
+                                    const { inputPrice, outputPrice } =
+                                        JSON.parse(e.target.value);
+                                    setInputCost((inputPrice * 1e6).toFixed(6));
+                                    setOutputCost(
+                                        (outputPrice * 1e6).toFixed(6),
+                                    );
+                                }
                             } else {
                                 setInputCost("");
                                 setOutputCost("");
@@ -400,6 +695,20 @@ export default function CostCalculatorPage() {
                             className="mt-1 w-full border bg-gray-900 p-2"
                             value={outputCost}
                         />
+                    </label>
+                </div>
+                <div className="mb-4">
+                    <label className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            checked={privacyFirst}
+                            onChange={(e) => setPrivacyFirst(e.target.checked)}
+                            className="h-4 w-4"
+                        />
+                        <span className="text-sm">
+                            Privacy-first pricing (exclude providers that train
+                            on data or log prompts)
+                        </span>
                     </label>
                 </div>
                 <label className="mb-4 block">
@@ -477,35 +786,60 @@ export default function CostCalculatorPage() {
                     <canvas ref={chartRef} />
                 </div>
 
-                <div className="flex-1 overflow-y-auto">
-                    {comparison.map((m) => {
-                        const cost = calculateCost(
-                            m.inputPrice * 1e6,
-                            m.outputPrice * 1e6,
-                            parseInt(inputTokens),
-                            parseInt(outputTokens),
-                        );
-                        return (
-                            <div key={m.id} className="mb-4 border-b pb-2">
-                                <strong>{m.id}</strong>
-                                <br />${`${(m.inputPrice * 1e6).toFixed(4)}`}/1M
-                                in, ${`${(m.outputPrice * 1e6).toFixed(4)}`}/1M
-                                out
-                                <br />
-                                Est:{" "}
-                                {cost !== null
-                                    ? `$${cost.toFixed(6)}`
-                                    : "Invalid"}
-                                <br />
-                                <button
-                                    className="mt-2 bg-red-500 px-2 py-1 text-white"
-                                    onClick={() => removeFromComparison(m.id)}
-                                >
-                                    Remove
-                                </button>
-                            </div>
-                        );
-                    })}
+                <div className="relative flex-1">
+                    <div className="absolute inset-0 overflow-y-auto">
+                        {comparison.map((m) => {
+                            const cost = calculateCost(
+                                m.inputPrice * 1e6,
+                                m.outputPrice * 1e6,
+                                parseInt(inputTokens),
+                                parseInt(outputTokens),
+                            );
+                            return (
+                                <div key={m.id} className="mb-4 border-b pb-2">
+                                    <strong>{m.id}</strong>
+                                    <br />$
+                                    {`${(m.inputPrice * 1e6).toFixed(4)}`}/1M
+                                    in, ${`${(m.outputPrice * 1e6).toFixed(4)}`}
+                                    /1M out
+                                    <br />
+                                    Est:{" "}
+                                    {cost !== null
+                                        ? `$${cost.toFixed(6)}`
+                                        : "Invalid"}
+                                    <br />
+                                    <div className="mt-2 flex gap-2">
+                                        <button
+                                            className="bg-blue-500 px-2 py-1 text-sm text-white"
+                                            onClick={() =>
+                                                updateModelPricing(m.id)
+                                            }
+                                        >
+                                            Update
+                                        </button>
+                                        <button
+                                            className="bg-red-500 px-2 py-1 text-sm text-white"
+                                            onClick={() =>
+                                                removeFromComparison(m.id)
+                                            }
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {comparison.length > 0 && (
+                        <div className="absolute bottom-2 right-2">
+                            <button
+                                className="rounded bg-blue-600 px-3 py-2 text-sm text-white shadow-lg hover:bg-blue-700"
+                                onClick={updateAllModelPricing}
+                            >
+                                Update All
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -522,6 +856,5 @@ export default function CostCalculatorPage() {
 // TODO: Add support for dynamic pricing models (e.g., Gemini 2.5 Pro, Grok 4) (probably has to be hard-coded though, since it's not available via the API)
 // TODO: Add an 'independent' mode where token counts are linked to model instead of being global.
 // TODO: Add rough model performance metrics to comparison chart as a second axis, probably based on Artificial Analysis' API (see https://artificialanalysis.ai/documentation). Note that this requires attribution and response caching to avoid exceeding the API rate limits, as per their documentation.
-// TODO: Skip providers who train on data (see https://github.com/lumitry/vela-chat/issues/66; may either require doing the second method or storing the model list on the server since I obviously can't just give people my API key)
 
 // Note: If you want straight-up input and output prices, not estimated costs based on token counts, see https://model-prices.vercel.app built by theo (github: @t3dotgg)
