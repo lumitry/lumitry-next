@@ -74,7 +74,7 @@ const config: Config ={
         },
         scroll: {
           to: {
-            transform: "translate(calc(-50% - 0.5rem))",
+            transform: "translate3d(calc(-1 * var(--scroll-distance, 50%)), 0, 0)",
           },
         },
       },

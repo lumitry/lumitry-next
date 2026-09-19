@@ -1,8 +1,14 @@
-// "use client" // if errors happen, this might be the cause, i'm new to next
+"use client";
 
 import { cn } from "@/lib/utils/cn";
-import React, { useEffect, useState, useRef } from "react";
-import { TechnologyCard } from "./TechnologyCard";
+import React, { useEffect, useRef, useState } from "react";
+import { TechnologyCard, type TechnologyItem } from "./TechnologyCard";
+
+const SPEED_PX_PER_SEC = {
+    fast: 400,
+    normal: 140,
+    slow: 70,
+} as const;
 
 export const InfiniteMovingCards = ({
     items,
@@ -11,81 +17,75 @@ export const InfiniteMovingCards = ({
     pauseOnHover = true,
     className,
 }: {
-    items: {
-        image: string;
-        name: string;
-        confidence: number;
-        description: string;
-    }[];
+    items: TechnologyItem[];
     direction?: "left" | "right";
     speed?: "fast" | "normal" | "slow";
     pauseOnHover?: boolean;
     className?: string;
 }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const scrollerRef = useRef<HTMLUListElement>(null);
-    const [clonedItems, setClonedItems] = useState(items);
-    const [started, setStarted] = useState(false);
-
-    // pre-map speed → duration
-    const speedMap = { fast: "20s", normal: "40s", slow: "80s" } as const;
+    const scrollerRef = useRef<HTMLDivElement>(null);
+    const trackRef = useRef<HTMLUListElement>(null);
+    const [ready, setReady] = useState(false);
 
     useEffect(() => {
-        if (!containerRef.current || !scrollerRef.current) return;
+        const scroller = scrollerRef.current;
+        const track = trackRef.current;
+        if (!scroller || !track) return;
 
-        const calculateClones = () => {
-            if (!containerRef.current || !scrollerRef.current) return;
+        const applyMetrics = () => {
+            const distance = track.offsetWidth;
+            if (!distance) return;
 
-            // measure how wide the container is vs one pass of your items
-            const cw = containerRef.current.offsetWidth;
-            const sw = scrollerRef.current.scrollWidth;
-
-            // how many times do we need to repeat to cover at least one full scroll?
-            const times = Math.ceil(cw / sw) + 1;
-
-            // build that cloned array
-            const buffer: typeof items = [];
-            for (let i = 0; i < times; i++) {
-                buffer.push(...items);
-            }
-            setClonedItems(buffer);
-
-            // set CSS custom props once
-            containerRef.current.style.setProperty(
+            scroller.style.setProperty("--scroll-distance", `${distance}px`);
+            scroller.style.setProperty(
+                "--animation-duration",
+                `${distance / SPEED_PX_PER_SEC[speed]}s`,
+            );
+            scroller.style.setProperty(
                 "--animation-direction",
                 direction === "left" ? "forwards" : "reverse",
             );
-            containerRef.current.style.setProperty(
-                "--animation-duration",
-                speedMap[speed],
-            );
-
-            // kick off the animation
-            setStarted(true);
+            setReady(true);
         };
 
-        calculateClones();
-        window.addEventListener("resize", calculateClones);
-        return () => window.removeEventListener("resize", calculateClones);
+        applyMetrics();
+
+        // Track width is content-sized, so this only fires on zoom / content
+        // changes — not every window resize — and never grows the DOM.
+        const observer = new ResizeObserver(applyMetrics);
+        observer.observe(track);
+        return () => observer.disconnect();
     }, [items, direction, speed]);
+
+    const renderTrack = (copy: "a" | "b") => (
+        <ul
+            ref={copy === "a" ? trackRef : undefined}
+            className="m-0 flex shrink-0 list-none gap-4 p-0 pr-4"
+        >
+            {items.map((item) => (
+                <TechnologyCard key={`${copy}-${item.name}`} item={item} />
+            ))}
+        </ul>
+    );
 
     return (
         <div
-            ref={containerRef}
-            className={cn("relative z-20 h-96 max-h-96 max-w-7xl", className)}
+            className={cn(
+                "relative z-20 w-full overflow-x-clip overflow-y-visible",
+                className,
+            )}
         >
-            <ul
+            <div
                 ref={scrollerRef}
                 className={cn(
-                    "flex w-max min-w-full shrink-0 flex-nowrap gap-4 py-4",
-                    started && "animate-scroll",
+                    "flex w-max will-change-transform",
+                    ready && "animate-scroll",
                     pauseOnHover && "hover:[animation-play-state:paused]",
                 )}
             >
-                {clonedItems.map((item, idx) => (
-                    <TechnologyCard key={idx} item={item} />
-                ))}
-            </ul>
+                {renderTrack("a")}
+                {renderTrack("b")}
+            </div>
         </div>
     );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 
 export function TechnologiesScroller() {
@@ -29,7 +29,7 @@ export function TechnologiesScroller() {
                 {/* </p> */}
             </div>
 
-            <div className="dark:bg-grid-white/[0.05] max-w-100 relative flex min-h-[50ch] flex-col items-center justify-center overflow-hidden rounded-md antialiased">
+            <div className="dark:bg-grid-white/[0.05] max-w-100 relative flex min-h-[50ch] flex-col items-center justify-center overflow-x-clip overflow-y-visible rounded-md antialiased pb-40">
                 <InfiniteMovingCards
                     items={technologies}
                     direction="right"

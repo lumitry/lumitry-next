@@ -1,27 +1,14 @@
 import React, { useState } from "react";
-import {
-    HoverCard,
-    HoverCardTrigger,
-    HoverCardContent,
-} from "@/components/ui/hover-card"; // Adjust the import path as needed
-export function TechnologyCard({
-    // key,
-    item,
-}: {
-    // key: number;
-    item: {
-        image: string; // src
-        name: string;
-        confidence: number;
-        description: string;
-        // TODO: show the confidence value somewhere on the CARD (i.e. without clicking on it)
-    };
-}) {
-    const [isHoverCardOpen, setIsHoverCardOpen] = useState(false);
-    const handleClick = () => {
-        // console.log("clicked");
-        setIsHoverCardOpen(!isHoverCardOpen);
-    };
+
+export type TechnologyItem = {
+    image: string;
+    name: string;
+    confidence: number;
+    description: string;
+};
+
+export function TechnologyCard({ item }: { item: TechnologyItem }) {
+    const [open, setOpen] = useState(false);
 
     const getConfidenceColor = (confidence: number) => {
         switch (confidence) {
@@ -41,49 +28,42 @@ export function TechnologyCard({
     };
 
     return (
-        <div onClick={handleClick}>
-            <li
-                className="technology-card relative w-[150px] max-w-full flex-shrink-0 rounded-2xl border border-b-0 border-slate-700 px-8 py-6 hover:cursor-pointer md:w-[150px]"
+        <li className="relative w-[150px] max-w-full flex-shrink-0">
+            <button
+                type="button"
+                aria-expanded={open}
+                onClick={() => setOpen((current) => !current)}
+                className="technology-card relative w-full rounded-2xl border border-b-0 border-slate-700 px-8 py-6 text-left hover:cursor-pointer"
                 style={{
                     background:
-                        "linear-gradient(180deg, var(--slate-800), var(--slate-900)",
+                        "linear-gradient(180deg, var(--slate-800), var(--slate-900))",
                 }}
-                // key={key}
-                // onClick={handleClick}
             >
-                <div
-                    aria-hidden="true"
-                    className="user-select-none -z-1 pointer-events-none absolute -left-0.5 -top-0.5 h-[calc(100%_+_4px)] w-[calc(100%_+_4px)]"
-                ></div>
                 <div
                     className={`absolute right-2 top-2 h-4 w-4 rounded-full ${getConfidenceColor(
                         item.confidence,
                     )}`}
-                ></div>
+                />
                 <img
                     src={item.image}
-                    alt={item.name}
+                    alt=""
                     width={100}
                     height={100}
+                    draggable={false}
                 />
-                {/* TODO: Make the image height actually constant */}
                 <h3 className="max-w-xs !pb-2 !pt-4 text-center text-base font-bold text-slate-100">
                     {item.name}
                 </h3>
-                <HoverCard open={isHoverCardOpen}>
-                    <HoverCardTrigger></HoverCardTrigger>
-                    <HoverCardContent side="bottom" className="w-96">
-                        <div>
-                            <p>
-                                <span className="font-bold">Confidence:</span>{" "}
-                                {item.confidence}/5
-                            </p>
-                            <p>{item.description}</p>
-                        </div>
-                    </HoverCardContent>
-                </HoverCard>
-                {/* </div> */}
-            </li>
-        </div>
+            </button>
+            {open ? (
+                <div className="absolute left-1/2 top-full z-50 mt-2 w-96 -translate-x-1/2 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+                    <p>
+                        <span className="font-bold">Confidence:</span>{" "}
+                        {item.confidence}/5
+                    </p>
+                    <p>{item.description}</p>
+                </div>
+            ) : null}
+        </li>
     );
 }
