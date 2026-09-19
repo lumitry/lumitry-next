@@ -4,8 +4,6 @@ import {
     HoverCardTrigger,
     HoverCardContent,
 } from "@/components/ui/hover-card"; // Adjust the import path as needed
-import Image from "next/image";
-
 export function TechnologyCard({
     // key,
     item,
@@ -62,7 +60,7 @@ export function TechnologyCard({
                         item.confidence,
                     )}`}
                 ></div>
-                <Image
+                <img
                     src={item.image}
                     alt={item.name}
                     width={100}

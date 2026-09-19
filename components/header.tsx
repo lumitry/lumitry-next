@@ -1,14 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import React from "react";
-import Image from "next/image";
 
 export default function Header() {
     return (
         <header className="bg-slate-900">
             <a href="/">
-                <Image
+                <img
                     src="/logos/bst_logo.png"
                     alt="Briggs Tucker's Logo"
                     width={64}
@@ -21,24 +19,24 @@ export default function Header() {
             </h1>
             <nav>
                 <div className="m-auto flex max-w-xl items-center justify-around pb-3 text-xl font-medium">
-                    <Link href="/">
+                    <a href="/">
                         <p>Home</p>
-                    </Link>
-                    <Link href="/#Technologies">
+                    </a>
+                    <a href="/#Technologies">
                         <p>Technologies</p>
-                    </Link>
-                    <Link href="/#WorkExperience">
+                    </a>
+                    <a href="/#WorkExperience">
                         <p>Work</p>
-                    </Link>
-                    <Link href="/#Projects">
+                    </a>
+                    <a href="/#Projects">
                         <p>Projects</p>
-                    </Link>
-                    {/* <Link href="/resume">
+                    </a>
+                    {/* <a href="/resume">
                         <p>Resume</p>
-                    </Link> */}
+                    </a> */}
                     {/* TODO: make a resume */}
                     {/* TODO: add a "Tools" page that links to the LLM cost calculator and anything else */}
-                    <Link href="/cost-calculator">LLM Cost Calculator</Link>
+                    <a href="/cost-calculator">LLM Cost Calculator</a>
                 </div>
             </nav>
         </header>
