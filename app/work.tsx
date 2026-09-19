@@ -1,13 +1,13 @@
 "use client";
 
 import React from "react";
-import { Work } from "@/components/work";
-import WorkComponent from "@/components/work";
+import { Experience } from "@/components/experience";
+import ExperienceComponent from "@/components/experience";
 
 export default function WorkExperience() {
-    let projs = experience.sort((a, b) => {
-        const dateA = a.dateEnd ? new Date(a.dateEnd) : new Date();
-        const dateB = b.dateEnd ? new Date(b.dateEnd) : new Date();
+    let jobs = experience.sort((a, b) => {
+        const dateA = a.dateEnd ?? a.dateStart ?? new Date();
+        const dateB = b.dateEnd ?? b.dateStart ?? new Date();
         return dateB.getTime() - dateA.getTime();
     });
     return (
@@ -19,8 +19,8 @@ export default function WorkExperience() {
                 Work Experience
             </h2>
             <div className="items-center">
-                {projs.map((work, idx) => (
-                    <WorkComponent work={work} key={idx} />
+                {jobs.map((job, idx) => (
+                    <ExperienceComponent experience={job} key={idx} />
                 ))}
             </div>
         </div>
@@ -28,28 +28,28 @@ export default function WorkExperience() {
 }
 
 const experience = [
-    new Work(
-        "Rochester Software Associates",
-        "/logos/RSA.png",
-        "https://www.rocsoft.com/",
-        `Software Quality Assurance Co-op`,
-        `- Wrote Selenium tests for React-based web app\n
+    new Experience({
+        name: "Rochester Software Associates",
+        image: "/logos/RSA.png",
+        link: "https://www.rocsoft.com/",
+        position: "Software Quality Assurance Co-op",
+        description: `- Wrote Selenium tests for React-based web app\n
         - Adapted 150+ comprehensive tests from old UI & codebase to work with new UI\n
         - Maintained constant contact with development to be aware of changes that impacted tests\n
         - Identified, confirmed, and wrote-up dozens of bugs and feature regressions, then verified dev's fixes\n
         `,
-        new Date("2024-05-15"),
-        new Date("2024-12-13"),
-    ),
-    new Work(
-        "New York State Arthur O. Eve Higher Education Opportunity Program",
-        "/logos/RIT_w.png",
-        "https://www.rit.edu/diversity/higher-education-opportunity-program-heop",
-        `Academic Tutor`,
-        `- Charged with assisting underrepresented students in in one-on-one and in-person sessions\n
+        dateStart: new Date("2024-05-15"),
+        dateEnd: new Date("2024-12-13"),
+    }),
+    new Experience({
+        name: "New York State Arthur O. Eve Higher Education Opportunity Program",
+        image: "/logos/RIT_w.png",
+        link: "https://www.rit.edu/diversity/higher-education-opportunity-program-heop",
+        position: "Academic Tutor",
+        description: `- Charged with assisting underrepresented students in in one-on-one and in-person sessions\n
         - Helped students become more confident in software development by connecting basic principles to more advanced concepts\n
         - Personalized session plans based on course content and individualized learning objectives`,
-        new Date("2023-09-19"),
-        new Date("2024-05-04"),
-    ),
+        dateStart: new Date("2023-09-19"),
+        dateEnd: new Date("2024-05-04"),
+    }),
 ];
