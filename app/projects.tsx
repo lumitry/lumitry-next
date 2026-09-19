@@ -29,9 +29,30 @@ export default function Projects() {
 
 const projects = [
     new Project(
+        "Talos",
+        "/projects/Talos.png",
+        `(Senior Project; Team of 6; ONGOING)\n
+        - Inherited an existing student project to repurpose existing educational robotic arms to be used as automatic camera operator\n
+        - Creating a versatile interface for multiple generations of Scorbot robotic arms, with a custom controller implementation on an ESP32 in addition to a Raspberry Pi Operator software that interfaces with stock controller\n
+        - Utilizing computer vision to track a consistent subject as they move across the frame\n
+        - Designing algorithms to make interesting, engaging camera shots\n
+        \n
+        (Note: Due to the ongoing nature of the project, my exact major contributions are not yet clear. However, I have taken a generalist role, and plan to get experience with as much of the project as possible.)`,
+    ),
+    new Project(
+        "Trellinatrix",
+        "/projects/trellinatrix.png",
+        `(Course: Trends in Software Development Process; Team of 5)\n
+        - Created a browser extension for automatically generating Trello cards from a product description in the context of an existing Trello board\n
+        - Utilized Trello and OpenRouter APIs for getting board information and generating cards\n
+        - Used WXT and browser APIs to create a miniature, ephemeral LLM harness inside a multi-browser-compatible extension\n
+        \n
+        (Note: This was an exercise in examining one possible future of software development in the age of AI; we do not believe that using AI to generate user stories is a productive or accurate way of creating user stories.)`,
+    ),
+    new Project(
         "Pillarboxd",
-        "/projects/Pillarboxd_Logo.png",
-        `(Course: Human-Centered Requirements and Design) (ONGOING)\n
+        "/projects/Pillarboxd_UI.png",
+        `(Course: Human-Centered Requirements and Design)\n
         - Worked in team of 5 to conceptualize, sketch, wireframe, and prototype a mobile app similar to Letterboxd for tracking movies, TV shows, and books\n
         - Created various types of diagrams & documentation to help focus in on the needs and viewpoints of end users\n
         - Expanded on the group's vision via creation of a functional prototype in Figma\n

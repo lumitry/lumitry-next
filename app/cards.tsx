@@ -29,7 +29,7 @@ export function TechnologiesScroller() {
                 {/* </p> */}
             </div>
 
-            <div className="dark:bg-grid-white/[0.05] max-w-100 relative flex min-h-[50ch] flex-col items-center justify-center overflow-x-clip overflow-y-visible rounded-md antialiased pb-40">
+            <div className="dark:bg-grid-white/[0.05] max-w-100 relative flex min-h-[50ch] flex-col items-center justify-center overflow-x-clip overflow-y-visible rounded-md pb-40 antialiased">
                 <InfiniteMovingCards
                     items={technologies}
                     direction="right"
@@ -237,7 +237,32 @@ const technologies = [
         description:
             "I used YouTrack on a SQA co-op to track bugs and features, and I'm confident in my ability to use it to manage a project. I wasn't tasked with administering it, so I'm not as familiar with that side of it.",
     },
-
-    // TODO add macos, linux (debian-based primarily), windows (+ wsl), vscode, intellij/jetbrains
-    // TODO update any pngs to svgs
+    {
+        image: "/logos/jmeter.svg",
+        name: "JMeter",
+        confidence: 4,
+        description:
+            "I used JMeter on a co-op to load-test the reliability of a web app, and am confident in my ability to use its various features to develop comprehensive testing suites.",
+    },
+    {
+        image: "/logos/grafana.svg",
+        name: "Grafana",
+        confidence: 3,
+        description:
+            "I used Grafana on a co-op to monitor the performance of a web app during load testing. While there are many aspects of Grafana that I have yet to learn, I believe I can use it to create insightful dashboards involving time series data.",
+    },
+    {
+        image: "/logos/influxdb.svg",
+        name: "InfluxDB",
+        confidence: 2,
+        description:
+            "I used InfluxDB on a co-op to store and query time series data for a load testing tool, and am somewhat confident in my ability to use it to store and query time series data for a variety of purposes, however there are many things I have yet to learn. Primarily used Flux queries.",
+    },
+    {
+        image: "/logos/tux.svg",
+        name: "Linux",
+        confidence: 3,
+        description:
+            "Linux is an incredibly powerful OS. I can confidently use it to navigate the filesystem, run commands, write scripts, develop software, and more. I used Ubuntu and Pop!\_OS for some time in high school, I used Kubuntu during my second co-op, and I maintain a home server running Ubuntu Server. Despite this familiarity, I give myself a 3 because there is near-infinite depth to the Linux ecosystem.",
+    },
 ];
