@@ -32,6 +32,19 @@ const experience = [
         name: "Rochester Software Associates",
         image: "/logos/RSA.png",
         link: "https://www.rocsoft.com/",
+        position: "Software Development Co-op",
+        description: `- Added numerous customer-requested features in legacy Java codebase and modern React frontend\n
+        - Fixed numerous issues in legacy Java codebase\n
+        - Created rigorous API testing suite using JMeter with custom Grafana dashboard & Dockerized setup\n
+        - Participated in full scrum process including code review & validation
+        `,
+        dateStart: new Date("2025-08-25"),
+        dateEnd: new Date("2025-12-12"),
+    }),
+    new Experience({
+        name: "Rochester Software Associates",
+        image: "/logos/RSA.png",
+        link: "https://www.rocsoft.com/",
         position: "Software Quality Assurance Co-op",
         description: `- Wrote Selenium tests for React-based web app\n
         - Adapted 150+ comprehensive tests from old UI & codebase to work with new UI\n
